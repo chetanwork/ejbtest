@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.chetan</groupId>
+    <artifactId>petDetails</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>petDetails-ejb</module>
+        <module>petDetails-web</module>
+        <module>petDetails-ear</module>
+    </modules>
+
+    <properties>
+        <!-- Set properties for project version, Java version, and WildFly version -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <wildfly.version>13.0.0.Final</wildfly.version>
+        <hibernate.version>5.5.7.Final</hibernate.version>
+        <flyway.version>9.8.1</flyway.version>
+        <deploy.wildfly.hostname>localhost</deploy.wildfly.hostname>
+        <deploy.wildfly.port>9990</deploy.wildfly.port>
+        <deploy.wildfly.username>admin123</deploy.wildfly.username>
+        <deploy.wildfly.password>admin@123</deploy.wildfly.password>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+    </properties>
+
+    <dependencies>
+        <!-- Add dependencies for the whole project -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>5.0.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Add the Maven Ear plugin to generate the EAR file -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway.version}</version>
+                <configuration>
+                    <driver>org.h2.Driver</driver>
+                    <url>jdbc:h2:mem:test</url>
+                    <user>sa</user>
+                    <password>sa</password>
+                    <schemas>
+                        <schema>petDetails</schema>
+                    </schemas>
+                    <locations>
+                        <location>classpath:/main/webapp/resources/db/migration</location>
+                    </locations>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <version>1.8</version>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <ejbModule>
+                            <groupId>com.chetan</groupId>
+                            <artifactId>petDetails-ejb</artifactId>
+                            <bundleFileName>petDetails-ejb.jar</bundleFileName>
+                        </ejbModule>
+                        <webModule>
+                            <groupId>com.chetan</groupId>
+                            <artifactId>petDetails-web</artifactId>
+                            <bundleFileName>petDetails-web.war</bundleFileName>
+                            <contextRoot>/petDetails</contextRoot>
+                        </webModule>
+                    </modules>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>2.1.0.Final</version>
+                <!--uncomment this for auto upload but before that need to set JNDI in widlfly(need to set datasource or need to add a script)-->
+                <!--<executions>
+                    <execution>
+                        <phase>install</phase>
+                       <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>undeploy</id>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                        </goals>
+                    </execution>
+                </executions>-->
+                <configuration>
+                    <force>true</force>
+                    <filename>${project.build.finalName}.jar</filename>
+                    <hostname>${deploy.wildfly.hostname}</hostname>
+                    <port>${deploy.wildfly.port}</port>
+                    <username>${deploy.wildfly.username}</username>
+                    <password>${deploy.wildfly.password}</password>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
