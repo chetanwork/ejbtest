@@ -1,0 +1,27 @@
+# IDE-specific files and directories
+.vscode/
+.idea/
+.project
+.classpath
+
+# Maven-specific files and directories
+target/
+
+# Log files
+*.log
+*.log.*
+log/
+logs/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.iml
+*~
+
+# Test reports
+TEST-*.xml
+
+# Generated files
+generated-sources/
