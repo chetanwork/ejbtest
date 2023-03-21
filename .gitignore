@@ -3,6 +3,7 @@
 .idea/
 .project
 .classpath
+*.DS_Store
 
 # Maven-specific files and directories
 target/
